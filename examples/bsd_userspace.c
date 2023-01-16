@@ -219,7 +219,7 @@ void print_sensor_data(struct bme280_data *comp_data)
     hum = 1.0f / 1024.0f * comp_data->humidity;
 #endif
 #endif
-    printf("%0.2lf deg C, %0.2lf hPa, %0.2lf%%\n", temp, press, hum);
+    printf("%0.2lf,%0.2lf,%0.2lf\n", temp, press, hum);
 }
 
 /*!
@@ -247,16 +247,12 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev)
         return rslt;
     }
 
-    printf("Temperature, Pressure, Humidity\n");
 
     /* Continuously stream sensor data */
-    while (1)
-    {
         rslt = bme280_set_sensor_mode(BME280_FORCED_MODE, dev);
         if (rslt != BME280_OK)
         {
             fprintf(stderr, "Failed to set sensor mode (code %+d).", rslt);
-            break;
         }
 
         /* Wait for the measurement to complete and print data @25Hz */
@@ -265,12 +261,9 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev)
         if (rslt != BME280_OK)
         {
             fprintf(stderr, "Failed to get sensor data (code %+d).", rslt);
-            break;
         }
 
         print_sensor_data(&comp_data);
-        dev->delay_us(1000000, dev->intf_ptr);
-    }
 
     return rslt;
 }
